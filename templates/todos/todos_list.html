@@ -1,0 +1,76 @@
+{% extends '_base.html' %}
+
+{% block css %}
+<style>
+  .todo--complete {
+    text-decoration: line-through;
+    /*text-decoration-color: hsla(0, 0%, 0%, 0.5);*/
+    text-decoration-thickness: .2em;
+  }
+</style>
+{% endblock css %}
+
+
+{% block title %}Todo App{% endblock title %}
+
+{% block content %}
+  <h1>Todo</h1>
+  <a href="{% url 'todos:create' %}" class="ui teal large label">
+    <i class="plus icon"></i>New
+  </a>
+
+  <ul>
+    {% for todo in object_list %}
+      <li class="ui list">
+        <div class="ui checkbox">
+          <input
+            type="checkbox"
+            {% if todo.complete %}checked=""{% endif %}
+            data-todo-id="{{ todo.id }}"
+            data-toggle-url="{% url 'todos:toggle' todo.id %}"
+          >
+          <label>
+            {# Edit button #}
+            <a href="{% url 'todos:edit' todo.id %}">
+              <i class=" black pen icon"></i>
+            </a>
+            {# Delete button #}
+            <a 
+              href="{% url 'todos:delete' todo.id %}" 
+              class="todo__btn--delete" 
+              data-delete-url="{% url 'todos:delete' todo.id %}"
+            >
+              <i class="red times icon"></i>
+            </a>
+            {# Todo title #}
+            <a href="{% url 'todos:detail' todo.id %}" class="{% if todo.complete %}todo--complete{% endif %}">
+              {{ todo.title }}
+            </a>
+          </label>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+
+  {# hidden form #}
+  <form id="hidden_form" method="post">
+    {% csrf_token %}
+  </form>
+
+{% endblock content %}
+
+{% block javascript_inline %}
+  <script>
+    $("[type=checkbox]").on("change", function() {
+      const toggleUrl = this.dataset.toggleUrl;
+      $("#hidden_form").attr("action", toggleUrl).trigger("submit");
+    })
+
+    $(".todo__btn--delete").on("click", function(event) {
+      event.preventDefault();
+      const deleteUrl = this.dataset.deleteUrl;
+      console.log("posting to ", deleteUrl)
+      $("#hidden_form").attr("action", deleteUrl).trigger("submit");
+    })
+  </script>
+{% endblock javascript_inline %}

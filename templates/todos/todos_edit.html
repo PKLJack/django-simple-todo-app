@@ -1,0 +1,25 @@
+{% extends '_base.html' %}
+
+{% block title %}Edit{% endblock title %}
+
+{% block content %}
+
+<h1>Edit Todo</h1>
+<form action="" method="post">
+  {% csrf_token %}
+  <table class="ui very basic table">
+    {{ form }}
+  </table>
+  <input class="ui teal button" type="submit" value="Submit">
+  <a href="{% url 'todos:list' %}" class="ui button">Cancel</a>
+</form>
+
+{% endblock content %}
+
+
+{% block javascript_inline %}
+  <script>
+    $("input[type='text']").wrap("<div class='ui input'></div>");
+    $("input[type='text']").first().select();
+  </script>
+{% endblock javascript_inline %}
